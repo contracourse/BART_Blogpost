@@ -1,14 +1,15 @@
 library(mlbench)
 library(bartMachine)
 data(BostonHousing)
-dim(BostonHousing)
+View(BostonHousing)
+str(BostonHousing)
 options(java.parameters = "-Xmx2g")
 
 library(caret)
 y <- BostonHousing$medv
 df <- within(BostonHousing, rm(medv))
 set.seed(42) 
-test_inds = createDataPartition(y = 1:length(y), p = 0.2, list = F) 
+test_inds = createDataPartition(y = 1:length(y), p = 0.2, list = F)
 
 df_test = df[test_inds, ]
 y_test = y[test_inds]

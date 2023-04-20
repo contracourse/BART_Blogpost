@@ -1,6 +1,9 @@
 library(bartMachine)
+# options(java.parameters = "-Xmx2g")
 data(automobile)
 automobile = na.omit(automobile)
+View(automobile)
+str(automobile)
 y <- automobile$log_price
 X <- automobile; X$log_price <- NULL
 
