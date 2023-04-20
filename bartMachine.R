@@ -49,7 +49,7 @@ plot_y_vs_yhat(bart_machine, Xtest=df_test, ytest=y_test, prediction_intervals =
 rmse <- function(x, y) sqrt(mean((x - y)^2))
 rsq <- function(x, y) summary(lm(y~x))$r.squared
 y_pred <- predict(bart_machine, df_test)
-paste('r2:', rsq(y_test, y_pred))
+paste('r2:', rsq(y_test, y_pred)) # the R-squared y-test fit with predicted 
 paste('rmse:', rmse(y_test, y_pred))
 cor.test(y_test, y_pred, method=c("pearson"))
 
