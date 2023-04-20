@@ -53,6 +53,7 @@ paste('r2:', rsq(y_test, y_pred))
 paste('rmse:', rmse(y_test, y_pred))
 cor.test(y_test, y_pred, method=c("pearson"))
 
+# Plot the importance plot
 investigate_var_importance(bart_machine, num_replicates_for_avg = 20)
 
 
