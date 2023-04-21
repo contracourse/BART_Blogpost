@@ -3,6 +3,7 @@ library(rstanarm)
 library(ggplot2)
 library(ggpubr)
 library(bayesplot)
+# library(bayestestR)
 
 # this option uses multiple cores if they're available
 options(mc.cores = parallel::detectCores())
