@@ -4,7 +4,8 @@ from sklearn.datasets import load_boston
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
 from scipy.stats import pearsonr
-
+#you need to install older version of scikit for the Boston housing
+# use pip3 install scikit-learn==1.1.3
 data = load_boston()
 X = data['data']
 y = data['target']
