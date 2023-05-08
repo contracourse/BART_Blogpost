@@ -34,7 +34,7 @@ ggplot2::qplot(y,
 bart_machine = bartMachine(df_train, y_train)
 summary(bart_machine)
 
-pd_plot(bart_machine, j = "zn")
+
 rmse_by_num_trees(bart_machine, 
                   tree_list=c(seq(25, 75, by=5)),
                   num_replicates=3)
@@ -56,7 +56,7 @@ cor.test(y_test, y_pred, method=c("pearson"))
 
 # Plot the importance plot
 investigate_var_importance(bart_machine, num_replicates_for_avg = 20)
-
+pd_plot(bart_machine, j = "rm") # Investigate the most important feature in the PD plot
 
 # Example aus BART
 set.seed(11)
