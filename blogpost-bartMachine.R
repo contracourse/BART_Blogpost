@@ -2,47 +2,49 @@ library(bartMachine)
 options(java.parameters = "-Xmx2g")
 library(data.table)
 library(dplyr)
-load("data_ml.RData")
-# data <- fread("edhec.csv")
+library(quantmod)
+library(PerformanceAnalytics)
+library(tseries)
 
-data_ml = as.data.table(data_ml)
-data_ml <- data_ml[ date %between% c("2006-12-31","2009-12-31")]
+# download ETF data from YahooFinance
+stock_namelist <- c("SPY", "VGK", "EWJ", "EEM", "VNQ", "RWX", "TLT", "DBC", "GLD", "VWO", "BND")
+prices <- xts()
+for (i in 1:length(stock_namelist)) {
+  tmp <- Ad(getSymbols(stock_namelist[i], from = "2015-01-01", to = "2019-12-31", auto.assign = FALSE))
+  tmp <- na.approx(tmp, na.rm = FALSE)  # interpolate NAs
+  prices <- cbind(prices, tmp) 
+}
+colnames(prices) <- stock_namelist
+tclass(prices) <- "Date"
+# View(prices)
+# prices <- as.data.frame(prices)
+# write.zoo(prices, file="export.csv", row.names=FALSE,col.names=TRUE,sep=",", index.name="Date")
 
-data_ml <- data_ml[month(date)==12,]  # use only the December data
-data_ml[,yr := year(date)]  # create year variable
+# compute log-returns and linear returns, normalized
+X_log <- CalculateReturns(prices, "log")[-1] 
+X_lin <- CalculateReturns(prices)[-1] 
+X_log <- as.data.table(X_log) # transform as data.table for our ML model
+N <- ncol(X_log)  # number of stocks
+T <- nrow(X_log)  # number of days
 
-# data_ml[,.N, keyby=c("date")]  # the number of firms for each month
+plot(prices/rep(prices[1, ], each = nrow(prices)), col = rainbow12equal, legend.loc = "topleft",
+     main = "Normalized prices")
 
-# The set of predictors
-X = c("Mkt_Cap_12M_Usd","Pb","Sales_Ps","Mom_11M_Usd","Vol1Y_Usd","Roa",
-      "Mom_Sharp_11M_Usd","Ebit_Noa","Roe","Share_Turn_12M","Ev_Ebitda",
-      "Ebitda_Margin","Asset_Turnover","Capex_Sales","Total_Debt_Capital",
-      "Op_Prt_Margin")
-
-# Model construction with ridge regression and lasso
-
-# the sample from 2006 to 2007 for training
-df_train = as.data.frame(data_ml[ yr %between% c(2006,2007),X, with=F])
-y_train = data_ml[ yr %between% c(2006,2007), R12M_Usd]
-
-# the sample from 2008 for validation
-df_test = as.data.frame(data_ml[ yr == 2008, X, with=F])
-y_test = data_ml[ yr == 2008, R12M_Usd]
-
+boxplot(X_log$SPY)
 
 
 library(caret)
-y <- data_ml$R12M_Usd
-y <- sign(y)*log1p(abs(y)) # log transformation
-df <- within(data_ml, rm(R12M_Usd))
+y <- X_log$SPY
+# y <- sign(y)*log1p(abs(y)) # log transformation
+df <- within(X_log, rm(SPY))
 set.seed(42)
 test_inds = createDataPartition(y = 1:length(y), p = 0.2, list = F)
 
-#Analyse the model
-model <- lm(y ~., data=df)
-plot(model)
-par(mfrow = c(2, 2))
-length(y)
+# #Analyse the model
+# model <- lm(y ~., data=df)
+# plot(model)
+# par(mfrow = c(2, 2))
+# length(y)
 
 df_test = df[test_inds, ]
 y_test = y[test_inds]
@@ -55,7 +57,7 @@ paste(dim(df_train))
 paste(dim(df_test))
 
 library(ggplot2)
-ggplot2::qplot(y,
+ggplot2::qplot(X_log$SPY,
       geom="histogram",
       #binwidth=0.1,
       main="Histogram of median price",
@@ -72,7 +74,7 @@ rmse_by_num_trees(bart_machine,
                   tree_list=c(seq(25, 75, by=5)),
                   num_replicates=3)
 
-bart_machine <- bartMachine(df_train, y_train, num_trees=65, seed=42)
+bart_machine <- bartMachine(df_train, y_train, num_trees=70, seed=42)
 plot_convergence_diagnostics(bart_machine)
 
 check_bart_error_assumptions(bart_machine)
@@ -89,7 +91,7 @@ cor.test(y_test, y_pred, method=c("pearson"))
 
 # Plot the importance plot
 investigate_var_importance(bart_machine, num_replicates_for_avg = 20)
-pd_plot(bart_machine, j = "rm") # Investigate the most important feature in the PD plot
+pd_plot(bart_machine, j = "VNQ") # Investigate the most important feature in the PD plot
 
 # Example aus BART
 set.seed(11)
