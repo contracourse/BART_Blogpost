@@ -92,16 +92,3 @@ cor.test(y_test, y_pred, method=c("pearson"))
 # Plot the importance plot
 investigate_var_importance(bart_machine, num_replicates_for_avg = 20)
 pd_plot(bart_machine, j = "VNQ") # Investigate the most important feature in the PD plot
-
-# Example aus BART
-set.seed(11)
-n = 200
-p = 5
-X = data.frame(matrix(runif(n * p), ncol = p))
-y = 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
-##build BART regression model
-bart_machine = bartMachine(X, y)
-#get posterior distribution
-posterior = bart_machine_get_posterior(bart_machine, X)
-print(posterior$y_hat)
-plot_convergence_diagnostics(bart_machine)
