@@ -1,14 +1,14 @@
 import numpy as np
+import pandas as pd
 import xgboost
-from sklearn.datasets import load_boston
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.metrics import mean_squared_error, r2_score
 from scipy.stats import pearsonr
-#you need to install older version of scikit for the Boston housing
-# use pip3 install scikit-learn==1.1.3
-data = load_boston()
-X = data['data']
-y = data['target']
+
+data = pd.read_csv('stock_data.csv')
+# assuming column names exist in CSV file
+X = data[['VGK', 'EWJ', 'EEM', 'VNQ', 'RWX', 'TLT', 'DBC', 'GLD', 'VWO', 'BND']] # replace feature1, feature2, feature3 with appropriate column names
+y = data['SPY']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 

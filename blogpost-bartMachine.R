@@ -23,7 +23,7 @@ tclass(prices) <- "Date"
 # compute log-returns and linear returns, normalized
 X_log <- CalculateReturns(prices, "log")[-1] 
 X_lin <- CalculateReturns(prices)[-1] 
-X_log <- as.data.table(X_log) # transform as data.table for our ML model
+X_log <- as.data.table(X_log)[,-1] # transform as data.table for our ML model
 N <- ncol(X_log)  # number of stocks
 T <- nrow(X_log)  # number of days
 
@@ -74,7 +74,7 @@ rmse_by_num_trees(bart_machine,
                   tree_list=c(seq(25, 75, by=5)),
                   num_replicates=3)
 
-bart_machine <- bartMachine(df_train, y_train, num_trees=70, seed=42)
+bart_machine <- bartMachine(df_train, y_train, num_trees=55, seed=42)
 plot_convergence_diagnostics(bart_machine)
 
 check_bart_error_assumptions(bart_machine)
