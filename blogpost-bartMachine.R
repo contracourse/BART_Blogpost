@@ -75,6 +75,7 @@ cor.test(y_test, y_pred, method=c("pearson"))
 # Plot the importance plot
 investigate_var_importance(bart_machine, num_replicates_for_avg = 20)
 pd_plot(bart_machine, j = "UNRATE") # Investigate the most important feature in the PD plot
+cov_importance_test(bart_machine, covariates = "UNRATE")
 
 # Example aus BART
 set.seed(11)
