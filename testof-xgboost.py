@@ -5,9 +5,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from scipy.stats import pearsonr
 
-data = pd.read_csv('stock_data.csv')
+data = pd.read_csv('Book1.csv')
 # assuming column names exist in CSV file
-X = data[['VGK', 'EWJ', 'EEM', 'VNQ', 'RWX', 'TLT', 'DBC', 'GLD', 'VWO', 'BND']] # replace feature1, feature2, feature3 with appropriate column names
+X = data[["T10Y3M","EFFR","UNRATE","STLFSI4","CPIAUCSL_PC1"]] # replace feature1, feature2, feature3 with appropriate column names
 y = data['SPY']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)

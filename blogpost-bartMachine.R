@@ -3,14 +3,15 @@ library(psych)
 library(data.table)
 options(java.parameters = "-Xmx2g")
 
-data <- fread("fredgraph.csv")
-data = as.data.table(data)
+
+data <- fread("Book1.csv")
+data = as.data.table(data)[,-1]
 # data <- data[-.N]
 View(data)
 
 library(caret)
-y <- data$SP500
-df <- within(data, rm(SP500))
+y <- data$SPY
+df <- within(data, rm(SPY))
 set.seed(42) 
 test_inds = createDataPartition(y = 1:length(y), p = 0.2, list = F)
 
@@ -33,7 +34,7 @@ ggplot2::qplot(y,
       fill=I("green"),
       col=I("black"))
 
-pairs.panels(data[,-1], 
+pairs.panels(data, 
              smooth = TRUE,      # If TRUE, draws loess smooths
              scale = FALSE,      # If TRUE, scales the correlation text font
              density = TRUE,     # If TRUE, adds density plots and histograms
@@ -56,7 +57,7 @@ rmse_by_num_trees(bart_machine,
                   tree_list=c(seq(25, 75, by=5)),
                   num_replicates=3)
 
-bart_machine <- bartMachine(df_train, y_train, num_trees=60, seed=42)
+bart_machine <- bartMachine(df_train, y_train, num_trees=35, seed=42)
 plot_convergence_diagnostics(bart_machine)
 
 check_bart_error_assumptions(bart_machine)
@@ -73,7 +74,7 @@ cor.test(y_test, y_pred, method=c("pearson"))
 
 # Plot the importance plot
 investigate_var_importance(bart_machine, num_replicates_for_avg = 20)
-pd_plot(bart_machine, j = "rm") # Investigate the most important feature in the PD plot
+pd_plot(bart_machine, j = "UNRATE") # Investigate the most important feature in the PD plot
 
 # Example aus BART
 set.seed(11)
