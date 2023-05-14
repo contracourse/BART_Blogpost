@@ -1,45 +1,61 @@
+options(java.parameters = "-Xmx2000m")
 library(bartMachine)
-# options(java.parameters = "-Xmx2g")
-data(automobile)
-automobile = na.omit(automobile)
-View(automobile)
-str(automobile)
-y <- automobile$log_price
-X <- automobile; X$log_price <- NULL
 
-bart_machine <- bartMachine(X, y)
-bart_machine    
-# Note that the “p-val for shapiro-wilk test of normality of residuals” is marginally less than
-#5%. Thus we conclude that the noise of Equation 1 is not normally distributed.
+library(MASS)
+data(Boston)
+X = Boston
+y = X$medv
+X$medv = NULL
 
-k_fold_cv(X, y, k_folds = 10)
-rmse_by_num_trees(bart_machine, 
-                  tree_list=c(seq(25, 75, by=5)),
-                  num_replicates=3)
+Xtrain = X[1 : (nrow(X) / 2), ]
+ytrain = y[1 : (nrow(X) / 2)]
+Xtest = X[(nrow(X) / 2 + 1) : nrow(X), ]
+ytest = y[(nrow(X) / 2 + 1) : nrow(X)]
 
-bart_machine_cv <- bartMachineCV(X, y)
+set_bart_machine_num_cores(4)
+bart_machine = build_bart_machine(Xtrain, ytrain,
+		num_trees = 200,
+		num_burn_in = 300,
+		num_iterations_after_burn_in = 1000,
+		use_missing_data = TRUE,
+		debug_log = TRUE,
+		verbose = TRUE)
+bart_machine
 
-k_fold_cv(X, y, k_folds = 10, k = 2, nu = 3, q = 0.9, num_trees = 200)
+plot_y_vs_yhat(bart_machine)
 
-predict(bart_machine_cv, X[1 : 7, ])
+yhat = predict(bart_machine, Xtest)
+# q("no")
 
-check_bart_error_assumptions(bart_machine_cv)
 
-plot_convergence_diagnostics(bart_machine_cv)
+options(java.parameters = "-Xmx1500m")
+library(bartMachine)
+data("Pima.te", package = "MASS")
+X <- data.frame(Pima.te[, -8])
+y <- Pima.te[, 8]
+bart_machine = bartMachine(X, y)
+bart_machine
+table(y, predict(bart_machine, X, type = "class"))
 
-calc_credible_intervals(bart_machine_cv, X[100, ], ci_conf = 0.95)
+raw_node_data = extract_raw_node_data(bart_machine, g = 37)
+raw_node_data[[17]]
 
-calc_prediction_intervals(bart_machine_cv, X[100, ], pi_conf = 0.95)
 
-plot_y_vs_yhat(bart_machine_cv, credible_intervals = TRUE)
-plot_y_vs_yhat(bart_machine_cv, prediction_intervals = TRUE)
-plot_convergence_diagnostics(bart_machine_cv)
 
-investigate_var_importance(bart_machine_cv, num_replicates_for_avg = 20)
+options(java.parameters = "-Xmx20000m")
+library(bartMachine)
+set_bart_machine_num_cores(10)
+set.seed(1)
+data(iris)
+iris2 = iris[51 : 150, ] #do not include the third type of flower for this example
+iris2$Species = factor(iris2$Species)  
+X = iris2[ ,1:4]
+y = iris2$Species
 
-cov_importance_test(bart_machine_cv, covariates = c("width"))
-cov_importance_test(bart_machine_cv, covariates = c("body_style"))
-cov_importance_test(bart_machine_cv, covariates = c("width",
-"curb_weight", "city_mpg", "length", "horsepower", "body_style",
-"engine_size", "highway_mpg", "peak_rpm", "normalized_losses"))
-cov_importance_test(bart_machine_cv)
+
+
+bart_machine = bartMachine(X, y, num_trees = 50, seed = 1)
+bart_machine
+##make probability predictions on the training data
+p_hat = predict(bart_machine, iris2[ ,1:4])
+p_hat
