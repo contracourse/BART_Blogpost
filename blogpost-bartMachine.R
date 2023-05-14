@@ -63,6 +63,7 @@ plot_convergence_diagnostics(bart_machine)
 check_bart_error_assumptions(bart_machine)
 
 plot_y_vs_yhat(bart_machine, prediction_intervals = TRUE)
+plot_y_vs_yhat(bart_machine, credible_intervals = TRUE)
 plot_y_vs_yhat(bart_machine, Xtest=df_test, ytest=y_test, prediction_intervals = TRUE)
 
 rmse <- function(x, y) sqrt(mean((x - y)^2))
