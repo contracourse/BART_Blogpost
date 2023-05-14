@@ -9,22 +9,22 @@ data = as.data.table(data)
 # data <- data[-.N]
 View(data)
 
-# # The set of predictors
-# X = c("T10Y3M", "EFFR", "UNRATE", "STLFSI4", "CPIAUCSL_PC1", "2y_expec_Inflation", "1y_real_rate")
+# The set of predictors
+X = c("T10Y3M", "EFFR", "UNRATE", "STLFSI4", "CPIAUCSL_PC1", "2y_expec_Inflation", "1y_real_rate")
 
 
-# # the sample from 2001 to 2009 for training
-# y_train = data[ DATE %between% c("2001-01-01", "2008-01-01"), log(SPY)]
-# df_train = data[ DATE %between% c("2001-01-01", "2008-01-01"), c(X), with=F]
+# the sample from 2001 to 2009 for training
+y_train = data[ DATE %between% c("2001-01-01", "2008-01-01"), SPY]
+df_train = data[ DATE %between% c("2001-01-01", "2008-01-01"), c(X), with=F]
 
-# # the sample from 2009 to 2019 for testing
-# y_test = data[ DATE %between% c("2010-01-01", "2018-12-01"), log(SPY)]
-# df_test = data[ DATE %between% c("2010-01-01", "2018-12-01"), c(X), with=F]
+# the sample from 2009 to 2019 for testing
+y_test = data[ DATE %between% c("2009-01-01", "2022-12-01"), SPY]
+df_test = data[ DATE %between% c("2009-01-01", "2022-12-01"), c(X), with=F]
 
 library(caret)
 y <- data$SPY
 df <- within(data, rm(SPY))[,-1]
-set.seed(42) 
+set.seed(42)
 test_inds = createDataPartition(y = 1:length(y), p = 0.2, list = F)
 
 df_test = df[test_inds, ]
