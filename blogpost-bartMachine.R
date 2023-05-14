@@ -5,9 +5,21 @@ options(java.parameters = "-Xmx2g")
 
 
 data <- fread("Book1.csv")
-data = as.data.table(data)[,-1]
+data = as.data.table(data)
 # data <- data[-.N]
 View(data)
+
+# # The set of predictors
+# X = c("T10Y3M", "EFFR", "UNRATE", "STLFSI4", "CPIAUCSL_PC1", "2y_expec_Inflation", "1y_real_rate")
+
+
+# # the sample from 2001 to 2009 for training
+# y_train = data[ DATE %between% c("2001-01-01", "2008-01-01"), log(SPY)]
+# df_train = data[ DATE %between% c("2001-01-01", "2008-01-01"), c(X), with=F]
+
+# # the sample from 2009 to 2019 for testing
+# y_test = data[ DATE %between% c("2010-01-01", "2018-12-01"), log(SPY)]
+# df_test = data[ DATE %between% c("2010-01-01", "2018-12-01"), c(X), with=F]
 
 library(caret)
 y <- data$SPY
@@ -57,7 +69,7 @@ rmse_by_num_trees(bart_machine,
                   tree_list=c(seq(25, 75, by=5)),
                   num_replicates=3)
 
-bart_machine <- bartMachine(df_train, y_train, num_trees=65, seed=42)
+bart_machine <- bartMachine(df_train, y_train, num_trees=40, seed=42)
 plot_convergence_diagnostics(bart_machine)
 
 check_bart_error_assumptions(bart_machine)
