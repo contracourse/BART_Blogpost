@@ -57,7 +57,7 @@ rmse_by_num_trees(bart_machine,
                   tree_list=c(seq(25, 75, by=5)),
                   num_replicates=3)
 
-bart_machine <- bartMachine(df_train, y_train, num_trees=35, seed=42)
+bart_machine <- bartMachine(df_train, y_train, num_trees=65, seed=42)
 plot_convergence_diagnostics(bart_machine)
 
 check_bart_error_assumptions(bart_machine)
