@@ -24,13 +24,12 @@ df_test = data[ DATE %between% c("2009-01-01", "2022-12-01"), c(X), with=F]
 library(caret)
 y <- data$SPY
 df <- within(data, rm(SPY))[,-1]
-set.seed(42)
-test_inds = createDataPartition(y = 1:length(y), p = 0.2, list = F)
+train_index = createDataPartition(y = 1:length(y), p = 0.3, list = F)
 
-df_test = df[test_inds, ]
-y_test = y[test_inds]
-df_train = df[-test_inds, ]
-y_train = y[-test_inds]
+df_test = df[train_index, ]
+y_test = y[train_index]
+df_train = df[-train_index, ]
+y_train = y[-train_index]
 
 paste("Shape of the train data: ")
 paste("Shape of the test data: ")
