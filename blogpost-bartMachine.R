@@ -7,7 +7,7 @@ options(java.parameters = "-Xmx2g")
 set_bart_machine_num_cores(3)
 
 tibble::tibble(a = 1)
-api_key <- "8276428bea4e2936cb724282dbdba937"
+api_key <- "yourapikey"
 fredr_set_key(api_key)
 
 cpi_df <- fredr(
